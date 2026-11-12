@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>la libre — Librería web integrada</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/componentes.css">
+</head>
+<body>
+  <header id="sitio-encabezado" class="contenedor">
+    <h1 id="sitio-titulo">la libre — Librería web integrada</h1>
+    <nav id="nav-principal" class="navegacion" aria-label="Navegación principal">
+      <ul>
+        <li><a href="#vista-catalogo" aria-current="page" class="navegacion__enlace--activo">Catálogo</a></li>
+        <li><a href="#vista-libros">Libros</a></li>
+        <li><a href="#vista-clientes">Clientes</a></li>
+        <li><a href="#vista-ventas">Ventas</a></li>
+        <li><a href="#vista-historial">Historial</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="contenido-principal" class="contenedor">
+    <!-- EJERCICIO 1: CATÁLOGO Y DETALLE -->
+    <section id="vista-catalogo" class="vista" aria-labelledby="catalogo-titulo">
+      <h2 id="catalogo-titulo">Catálogo</h2>
+
+      <div class="formulario">
+        <h3>Buscar y paginar en el catálogo (GET /api/libros/)</h3>
+        <label class="campo__etiqueta" for="catalogo-busqueda">Buscar por título (búsqueda parcial sin distinguir mayúsculas)</label>
+        <input class="campo__control" id="catalogo-busqueda" type="search" name="busqueda" placeholder="Ej.: Rayuela, Cuentos...">
+
+        <label class="campo__etiqueta" for="catalogo-limit">Cantidad por página (limit: 1 a 100)</label>
+        <input class="campo__control" id="catalogo-limit" type="number" min="1" max="100" step="1" value="20">
+
+        <div class="barra-acciones">
+          <button id="catalogo-buscar" class="boton boton--primario" type="button">Buscar en catálogo</button>
+          <button id="catalogo-limpiar" class="boton" type="button">Limpiar búsqueda</button>
+          <button id="catalogo-anterior" class="boton" type="button">Página anterior</button>
+          <button id="catalogo-siguiente" class="boton" type="button">Página siguiente</button>
+        </div>
+        <p id="catalogo-pagina-info">Desplazamiento (offset): 0 · Límite (limit): 20</p>
+      </div>
+
+      <div id="catalogo-mensaje" role="status" class="mensaje"></div>
+
+      <h3>Libros disponibles</h3>
+      <div id="catalogo-lista" class="grilla-catalogo"></div>
+
+      <h3>Detalle del libro y autores (GET /api/libros/{id})</h3>
+      <div id="catalogo-detalle" class="panel-detalle">
+        <p>Seleccioná «Ver detalle y autores» en cualquier libro del catálogo para consultar sus autorías.</p>
+      </div>
+      <div id="catalogo-detalle-mensaje" role="status" class="mensaje"></div>
+    </section>
+
+    <!-- EJERCICIO 2: ALTA DE LIBROS Y PRECIO HISTÓRICO -->
+    <section id="vista-libros" class="vista" aria-labelledby="libros-titulo">
+      <h2 id="libros-titulo">Libros</h2>
+
+      <h3>Alta de libro (POST /api/libros/)</h3>
+      <form id="libros-form" class="formulario" action="#" method="post" novalidate>
+        <label class="campo__etiqueta" for="libro-titulo">Título *</label>
+        <input class="campo__control" id="libro-titulo" type="text" name="titulo" required>
+
+        <label class="campo__etiqueta" for="libro-isbn">ISBN *</label>
+        <input class="campo__control" id="libro-isbn" type="text" name="isbn" required placeholder="Ej.: 978-950-00-0099-9">
+
+        <label class="campo__etiqueta" for="libro-precio">Precio (&gt; 0) *</label>
+        <input class="campo__control" id="libro-precio" type="number" name="precio" min="0.01" step="0.01" required>
+
+        <label class="campo__etiqueta" for="libro-stock">Stock (entero &ge; 0) *</label>
+        <input class="campo__control" id="libro-stock" type="number" name="stock" min="0" step="1" value="10" required>
+
+        <label class="campo__etiqueta" for="libro-editorial">Editorial (GET /api/editoriales/) *</label>
+        <select class="campo__control" id="libro-editorial" name="editorial"></select>
+
+        <label class="campo__etiqueta" for="libro-genero">Género opcional (GET /api/generos/)</label>
+        <select class="campo__control" id="libro-genero" name="genero"></select>
+
+        <div class="panel-detalle">
+          <h4>Autorías del libro (al menos un autor con rol y orden)</h4>
+          <p>Podés elegir un autor del listado o verificar cualquier ID con <code>GET /api/autores/{id}</code> antes de agregarlo.</p>
+
+          <label class="campo__etiqueta" for="libro-autor-select">Seleccionar autor del listado (GET /api/autores/)</label>
+          <select class="campo__control" id="libro-autor-select"></select>
+
+          <label class="campo__etiqueta" for="libro-autor-id-input">O buscar/verificar autor por ID (GET /api/autores/{id})</label>
+          <div class="barra-acciones">
+            <input class="campo__control" id="libro-autor-id-input" type="number" min="1" step="1" placeholder="ID de autor (ej.: 1)">
+            <button id="libro-autor-verificar" class="boton" type="button">Verificar autor por ID</button>
+          </div>
+          <div id="libro-autor-verificado" role="status" class="mensaje"></div>
+
+          <label class="campo__etiqueta" for="libro-autor-rol">Rol de autoría</label>
+          <select class="campo__control" id="libro-autor-rol">
+            <option value="autor">autor</option>
+            <option value="coautor">coautor</option>
+            <option value="traductor">traductor</option>
+            <option value="ilustrador">ilustrador</option>
+          </select>
+
+          <label class="campo__etiqueta" for="libro-autor-orden">Orden en la tapa (&ge; 1)</label>
+          <input class="campo__control" id="libro-autor-orden" type="number" min="1" step="1" value="1">
+
+          <div class="barra-acciones">
+            <button id="libro-autor-agregar" class="boton" type="button">Agregar autoría al libro</button>
+          </div>
+
+          <div class="tabla-contenedor">
+            <table class="tabla" id="libro-autorias-tabla">
+              <caption>Autorías asignadas al libro a crear</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Autor ID</th>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">Rol</th>
+                  <th scope="col">Orden</th>
+                  <th scope="col">Acciones</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="barra-acciones">
+          <button id="libros-submit" type="submit" class="boton boton--primario">Registrar libro</button>
+          <button id="libros-reset" type="reset" class="boton">Limpiar formulario</button>
+        </div>
+      </form>
+      <div id="libros-mensaje" role="status" class="mensaje"></div>
+
+      <h3>Actualizar precio de un libro (PATCH /api/libros/{id} — Caso G-05 Precio histórico)</h3>
+      <form id="libros-patch-form" class="formulario" action="#" method="post" novalidate>
+        <label class="campo__etiqueta" for="patch-libro-select">Libro a modificar</label>
+        <select class="campo__control" id="patch-libro-select"></select>
+
+        <label class="campo__etiqueta" for="patch-libro-precio">Nuevo precio (&gt; 0)</label>
+        <input class="campo__control" id="patch-libro-precio" type="number" min="0.01" step="0.01" required placeholder="Ej.: 35000.00">
+
+        <div class="barra-acciones">
+          <button id="patch-libro-submit" type="submit" class="boton">Actualizar precio (PATCH)</button>
+        </div>
+      </form>
+      <div id="patch-libro-mensaje" role="status" class="mensaje"></div>
+
+      <h3>Listado actual de libros</h3>
+      <div class="tabla-contenedor">
+        <table class="tabla" id="libros-tabla">
+          <caption>Libros registrados en PostgreSQL</caption>
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Título</th>
+              <th scope="col">ISBN</th>
+              <th scope="col">Editorial</th>
+              <th scope="col">Género</th>
+              <th scope="col">Stock</th>
+              <th scope="col">Precio</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- EJERCICIO 2: ALTA Y CONSULTA DE CLIENTES -->
+    <section id="vista-clientes" class="vista" aria-labelledby="clientes-titulo">
+      <h2 id="clientes-titulo">Clientes</h2>
+
+      <h3>Alta de cliente (POST /api/clientes/)</h3>
+      <form id="clientes-form" class="formulario" action="#" method="post" novalidate>
+        <label class="campo__etiqueta" for="cliente-nombre">Nombre completo *</label>
+        <input class="campo__control" id="cliente-nombre" type="text" name="nombre" required>
+
+        <label class="campo__etiqueta" for="cliente-email">Correo electrónico *</label>
+        <input class="campo__control" id="cliente-email" type="email" name="email" required placeholder="ejemplo@dominio.com">
+
+        <div class="barra-acciones">
+          <button id="clientes-submit" type="submit" class="boton boton--primario">Registrar cliente</button>
+          <button type="reset" class="boton">Limpiar formulario</button>
+        </div>
+      </form>
+      <div id="clientes-mensaje" role="status" class="mensaje"></div>
+
+      <h3>Consultar cliente por ID (GET /api/clientes/{id} — Caso G-03)</h3>
+      <div class="formulario">
+        <label class="campo__etiqueta" for="cliente-buscar-id">Identificador del cliente (ID entero)</label>
+        <div class="barra-acciones">
+          <input class="campo__control" id="cliente-buscar-id" type="number" min="1" step="1" placeholder="Ej.: 1">
+          <button id="cliente-buscar-btn" class="boton boton--primario" type="button">Buscar cliente por ID</button>
+        </div>
+        <div id="cliente-buscar-resultado" role="status" class="mensaje"></div>
+      </div>
+
+      <h3>Listado de clientes registrados (GET /api/clientes/)</h3>
+      <div class="tabla-contenedor">
+        <table class="tabla" id="clientes-tabla">
+          <caption>Clientes en PostgreSQL</caption>
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Nombre completo</th>
+              <th scope="col">Correo electrónico</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- EJERCICIO 3: REGISTRAR VENTAS -->
+    <section id="vista-ventas" class="vista" aria-labelledby="ventas-titulo">
+      <h2 id="ventas-titulo">Ventas</h2>
+
+      <div class="formulario">
+        <h3>1. Cliente de la venta</h3>
+        <label class="campo__etiqueta" for="venta-cliente">Seleccionar cliente del listado</label>
+        <select class="campo__control" id="venta-cliente" name="cliente"></select>
+
+        <label class="campo__etiqueta" for="venta-cliente-id-manual">O indicar / verificar ID de cliente manualmente (GET /api/clientes/{id} o prueba 409)</label>
+        <div class="barra-acciones">
+          <input class="campo__control" id="venta-cliente-id-manual" type="number" step="1" placeholder="ID de cliente (ej.: 2 o 9999)">
+          <button id="venta-cliente-verificar" class="boton" type="button">Verificar cliente en API</button>
+        </div>
+        <div id="venta-cliente-info" role="status" class="mensaje"></div>
+
+        <h3>2. Agregar renglones del catálogo</h3>
+        <label class="campo__etiqueta" for="venta-libro">Libro del catálogo</label>
+        <select class="campo__control" id="venta-libro" name="libro"></select>
+
+        <label class="campo__etiqueta" for="venta-libro-id-manual">O indicar ID de libro manualmente (opcional, para prueba 409)</label>
+        <input class="campo__control" id="venta-libro-id-manual" type="number" step="1" placeholder="Dejar vacío para usar el selector">
+
+        <label class="campo__etiqueta" for="venta-cantidad">Cantidad (entero &gt; 0)</label>
+        <input class="campo__control" id="venta-cantidad" type="number" name="cantidad" min="1" step="1" value="1">
+
+        <label class="campo__etiqueta" for="venta-permitir-duplicado">
+          <input id="venta-permitir-duplicado" type="checkbox">
+          Permitir enviar al backend sin bloqueo local (para probar rechazo 409 / 422 del servidor en Caso G-06)
+        </label>
+
+        <div class="barra-acciones">
+          <button id="venta-agregar" class="boton boton--primario" type="button">Agregar renglón</button>
+        </div>
+      </div>
+
+      <h3>Renglones del borrador en memoria</h3>
+      <div class="tabla-contenedor">
+        <table class="tabla" id="ventas-renglones">
+          <caption>Renglones de la venta en curso (borrador en memoria)</caption>
+          <thead>
+            <tr>
+              <th scope="col">Libro ID</th>
+              <th scope="col">Título</th>
+              <th scope="col">Cantidad</th>
+              <th scope="col">Precio unitario (catálogo)</th>
+              <th scope="col">Subtotal estimado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h3>3. Resumen y confirmación (POST /api/ventas/)</h3>
+      <div id="ventas-total" class="mensaje"></div>
+      <div class="barra-acciones">
+        <button id="ventas-confirmar" class="boton boton--primario" type="button">Confirmar venta</button>
+        <button id="ventas-cancelar" class="boton boton--peligro" type="button">Cancelar venta</button>
+      </div>
+      <div id="ventas-mensaje" role="status" class="mensaje"></div>
+      <div id="ventas-confirmada" class="panel-detalle esta-oculto"></div>
+    </section>
+
+    <!-- EJERCICIO 3: HISTORIAL Y DETALLE -->
+    <section id="vista-historial" class="vista" aria-labelledby="historial-titulo">
+      <h2 id="historial-titulo">Historial</h2>
+
+      <h3>Ventas registradas en PostgreSQL (GET /api/ventas/)</h3>
+      <div class="formulario">
+        <label class="campo__etiqueta" for="historial-limit">Cantidad por página (limit: 1 a 100)</label>
+        <input class="campo__control" id="historial-limit" type="number" min="1" max="100" step="1" value="20">
+        <div class="barra-acciones">
+          <button id="historial-recargar" class="boton boton--primario" type="button">Actualizar historial</button>
+          <button id="historial-anterior" class="boton" type="button">Página anterior</button>
+          <button id="historial-siguiente" class="boton" type="button">Página siguiente</button>
+        </div>
+        <p id="historial-pagina-info">Desplazamiento (offset): 0 · Límite (limit): 20</p>
+      </div>
+
+      <div id="historial-mensaje" role="status" class="mensaje"></div>
+
+      <div class="tabla-contenedor">
+        <table class="tabla" id="historial-tabla">
+          <caption>Historial de ventas confirmadas</caption>
+          <thead>
+            <tr>
+              <th scope="col">Identificador</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Total</th>
+              <th scope="col">Detalle</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h3>Detalle de la venta (GET /api/ventas/{id})</h3>
+      <div id="historial-detalle" class="panel-detalle">
+        <p>Elegí «Ver detalle» en una venta para consultar su fecha, cliente, renglones e importes históricos.</p>
+      </div>
+      <div id="historial-detalle-mensaje" role="status" class="mensaje"></div>
+    </section>
+  </main>
+
+  <footer id="sitio-pie" class="contenedor">
+    <p>Global de Programación III — Aplicación integrada con FastAPI, SQLModel, PostgreSQL y Nginx.</p>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/catalogo.js"></script>
+  <script src="js/altas.js"></script>
+  <script src="js/ventas.js"></script>
+</body>
+</html>

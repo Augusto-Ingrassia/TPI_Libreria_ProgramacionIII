@@ -1,0 +1,27 @@
+# Entornos virtuales y cachés de Python
+**/.venv/
+**/venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.coverage
+**/htmlcov/
+
+# Secretos y variables de entorno reales
+**/.env
+**/.env.*
+!**/env.example
+
+# Archivos de sistema, agentes y herramientas locales
+**/node_modules/
+**/.DS_Store
+Thumbs.db
+*.zip
+sync-repos.ps1
+**/.claude/
+**/.engram/
+**/.opencode/
+**/.agents/
+**/.atl/
+**/.active-orchestrator-state.json
+**/skills-lock.json

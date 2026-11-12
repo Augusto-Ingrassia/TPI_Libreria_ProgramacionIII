@@ -1,0 +1,26 @@
+### Variable de host base
+@host = http://127.0.0.1:8000
+
+# Precondicion: base vacia (sin seed de app.initial_data); el seed cambiaria los ids de estas peticiones.
+
+### 1. Health Liveness Probe (Verificación de proceso vivo)
+# No consulta la base de datos.
+# Respuesta esperada:
+# HTTP/1.1 200 OK
+# Content-Type: application/json
+# {"estado": "vivo"}
+GET {{host}}/health/live
+Accept: application/json
+
+###
+
+### 2. Health Readiness Probe (Verificación de base de datos)
+# Ejecuta de forma asincrónica SELECT 1 sobre PostgreSQL.
+# Respuesta esperada:
+# HTTP/1.1 200 OK
+# Content-Type: application/json
+# {"estado": "listo", "database": "conectada"}
+GET {{host}}/health/ready
+Accept: application/json
+
+###

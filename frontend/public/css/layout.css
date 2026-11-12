@@ -1,0 +1,83 @@
+/* layout.css — Estructura de página con Grid + Flexbox. Mobile-first desde 320px. */
+
+body {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+}
+
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-max);
+  margin-inline: auto;
+  padding-inline: var(--espaciado-m);
+}
+
+.vista {
+  min-width: 0;
+  padding-block: var(--espaciado-m);
+}
+
+.navegacion ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaciado-s) var(--espaciado-m);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grilla-catalogo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espaciado-m);
+  min-width: 0;
+}
+
+@media (min-width: 48rem) {
+  .grilla-catalogo {
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  }
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaciado-s);
+  min-width: 0;
+}
+
+.grupo-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaciado-s);
+  min-width: 0;
+}
+
+.barra-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaciado-s);
+  margin-block: var(--espaciado-s);
+}
+
+.campo__control,
+.formulario input,
+.formulario select {
+  max-width: 100%;
+}
+
+.tabla-contenedor {
+  max-width: 100%;
+  margin-block: var(--espaciado-s);
+}
+
+main,
+header,
+footer,
+section,
+div {
+  min-width: 0;
+}

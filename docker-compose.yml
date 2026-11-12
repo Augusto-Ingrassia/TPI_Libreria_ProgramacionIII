@@ -1,0 +1,56 @@
+services:
+  libreria-db:
+    image: postgres:16-alpine
+    container_name: libreria-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-libreria_db}
+    volumes:
+      - libreria-pgdata:/var/lib/postgresql/data
+    networks:
+      - libreria-net
+
+  libreria:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: libreria:latest
+    container_name: libreria
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@libreria-db:5432/${POSTGRES_DB:-libreria_db}
+      SQL_ECHO: "false"
+      APP_PORT: "8000"
+      CORS_ORIGINS: "*"
+    depends_on:
+      - libreria-db
+    networks:
+      - libreria-net
+
+  libreria-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: libreria-frontend:latest
+    container_name: libreria-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      API_UPSTREAM: libreria:8000
+    depends_on:
+      - libreria
+    networks:
+      - libreria-net
+
+networks:
+  libreria-net:
+    name: libreria-net
+
+volumes:
+  libreria-pgdata:
+    name: libreria-pgdata

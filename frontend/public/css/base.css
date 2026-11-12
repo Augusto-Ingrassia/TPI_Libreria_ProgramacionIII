@@ -1,0 +1,61 @@
+/* base.css — Ejercicio 2: tokens, tipografía de sistema y base accesible.
+ * Orden de cascada: base → layout → componentes.
+ */
+
+:root {
+  --color-fondo: #fdf8f0;
+  --color-texto: #1f2937;
+  --color-acento: #7f1d1d;
+  --color-acento-texto: #ffffff;
+  --color-error: #991b1b;
+  --color-fondo-error: #fef2f2;
+  --color-exito: #166534;
+  --color-fondo-exito: #f0fdf4;
+  --color-borde: #d6c9b8;
+  --color-fondo-tarjeta: #ffffff;
+
+  --fuente-base: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --espaciado-s: 0.5rem;
+  --espaciado-m: 1rem;
+  --espaciado-l: 2rem;
+
+  --ancho-max: 72rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente-base);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-acento);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,98 @@
+### Variable de host base
+@host = http://127.0.0.1:8000
+
+# Precondicion: base vacia (sin seed de app.initial_data); los ids dependen de ello.
+# RN-12: el detail de los 409 es un mensaje propio, sin nombres de tablas ni restricciones.
+
+### 1. Alta exitosa
+# Esperado: 201 Created {"id": <int>, "nombre": "Planeta", "pais": "España"}
+POST {{host}}/editoriales/
+Content-Type: application/json
+
+{"nombre": "Planeta", "pais": "España"}
+
+###
+
+### 2. Alta duplicada (ejecutar tras la 1)
+# Esperado: 409 Conflict {"detail": "Ya existe una editorial con ese nombre"} (sin nombres de restricciones)
+POST {{host}}/editoriales/
+Content-Type: application/json
+
+{"nombre": "Planeta", "pais": "Argentina"}
+
+###
+
+### 3. Alta inválida (pais ausente)
+# Esperado: 422 Unprocessable Entity
+POST {{host}}/editoriales/
+Content-Type: application/json
+
+{"nombre": "Anagrama"}
+
+###
+
+### 4. Listado por defecto (limit=20, offset=0)
+# Esperado: 200 OK, arreglo ordenado por id ascendente ([] si no hay datos)
+GET {{host}}/editoriales/
+
+###
+
+### 5. Paginación válida
+# Esperado: 200 OK, arreglo con hasta 10 editoriales desde la posición 21
+GET {{host}}/editoriales/?limit=10&offset=20
+
+###
+
+### 6. Paginación inválida
+# Esperado: 422 Unprocessable Entity (limit fuera de 1..100)
+GET {{host}}/editoriales/?limit=101
+
+###
+
+### 7. Consulta existente (ajustar id)
+# Esperado: 200 OK con id, nombre y pais
+GET {{host}}/editoriales/1
+
+###
+
+### 8. Consulta inexistente
+# Esperado: 404 Not Found {"detail": "Editorial no encontrada"}
+GET {{host}}/editoriales/999
+
+###
+
+### 9. PATCH parcial
+# Esperado: 200 OK, nombre intacto y pais "Argentina"
+PATCH {{host}}/editoriales/1
+Content-Type: application/json
+
+{"pais": "Argentina"}
+
+###
+
+### 10.0 Preparación: crear la editorial "Anagrama" (id 3)
+# Esperado: 201 Created con id 3 (la petición 2, rechazada por 409, consume el id 2 de la secuencia de PostgreSQL)
+POST {{host}}/editoriales/
+Content-Type: application/json
+
+{"nombre": "Anagrama", "pais": "España"}
+
+###
+
+### 10. PATCH con colisión (requiere la editorial "Anagrama" con id 3 de la petición 10.0)
+# Esperado: 409 Conflict; la editorial 3 conserva su nombre
+PATCH {{host}}/editoriales/3
+Content-Type: application/json
+
+{"nombre": "Planeta"}
+
+###
+
+### 11. PATCH inexistente
+# Esperado: 404 Not Found
+PATCH {{host}}/editoriales/999
+Content-Type: application/json
+
+{"pais": "Chile"}
+
+###
