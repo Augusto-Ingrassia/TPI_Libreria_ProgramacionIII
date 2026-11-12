@@ -9,9 +9,10 @@ Documentación completa del despliegue integrado (`frontend` + `backend` + `Post
 | Parámetro | Valor |
 | :--- | :--- |
 | **Proyecto en Easypanel** | `el_piso_es_laburo-3` |
-| **URL pública HTTPS (Frontend + `/api/`)** | `https://el-piso-es-laburo-3-frontend.sajp60.easypanel.host` *(o el dominio HTTPS asignado al servicio `frontend`)* |
-| **Endpoint de salud a través del Proxy** | `https://el-piso-es-laburo-3-frontend.sajp60.easypanel.host/api/health/ready` |
-| **Servicio Backend (interno en Easypanel)** | `libreria-api` (o `backend`) — escucha en `0.0.0.0:8000` |
+| **URL pública HTTPS (Frontend + `/api/`)** | **https://el-piso-es-laburo-3-libreria-frontend.sajp60.easypanel.host/** |
+| **Endpoint de salud a través del Proxy** | https://el-piso-es-laburo-3-libreria-frontend.sajp60.easypanel.host/api/health/ready |
+| **Servicio Frontend (en Easypanel)** | `libreria_frontend` (imagen `nginx:1.30-alpine`, escucha en puerto `80`) |
+| **Servicio Backend (interno en Easypanel)** | `libreria-api` — escucha en `0.0.0.0:8000` (`el_piso_es_laburo-3_libreria-api:8000`) |
 | **Servicio Base de Datos (interno en Easypanel)** | `libreria-db` (`postgres:16-alpine`, puerto privado `5432`) |
 | **Revisión / Rama** | `main` |
 
