@@ -7,7 +7,7 @@ Aplicación web integrada que conecta las pantallas en **HTML5, CSS3 y JavaScrip
 ## Integrantes del Grupo
 
 - Lautaro Mejías
-- Augusto Ingrassia
+- Augusto Tello Ingrassia
 - Franco Squillo
 - Uriel Vega
 - Matheo Bazán

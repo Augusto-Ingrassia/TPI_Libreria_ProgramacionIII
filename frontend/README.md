@@ -10,7 +10,7 @@ Todos los datos que muestra la página son ficticios. No usa librerías, framewo
 | --- | --- | --- |
 | francosquillo | 1 — HTML | Franco Squillo |
 | Lautaro Mejias | 2 — CSS | Lautaro Mejias |
-| Augusto-Ingrassia | 3 — Datos y catálogo | Augusto Ingrassia |
+| Augusto-Ingrassia | 3 — Datos y catálogo | Augusto Tello Ingrassia |
 | Elias | 4 — Altas de libros y clientes | Elias Perez |
 | vegauriel2229 | 5 — Ventas e historial | Uriel Vega |
 | Matheo Bazan | 6 — Persistencia, verificación y documentación | Matheo Bazán |
